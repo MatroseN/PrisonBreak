@@ -21,12 +21,16 @@ namespace PrisonBreak {
             // TODO: Remove later
             #region Testing
             // Only for testing
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 800;
+            _graphics.ApplyChanges();
+
             _entities = new List<Entity.Entity>();
             _block = new Vector2(32, 32);
             int i = 0;
             _grid = new Vector2[25 * 25];
-            for (int y = 0; y < 25 * 32; y+=32) {
-                for (int x = 0; x < 25 * 32; x+=32) {
+            for (int y = 0; y < 25 * (int)_block.Y; y+=(int)_block.Y) {
+                for (int x = 0; x < 25 * (int)_block.X; x+=(int)_block.X) {
                     _grid[i] = new Vector2(x, y);
                     i++;
                 }
