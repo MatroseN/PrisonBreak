@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 namespace PrisonBreak.Entity {
     public class Player : Entity, Character{
         public Player(Game game, Vector2 position) : base(game, position) {
-
+            Direction = Direction.EAST;
         }
 
         public override void Initialize() {
