@@ -27,8 +27,8 @@ namespace PrisonBreak.Graphing {
             // Add more positions to create more edges. Look at the Direction enum to see what directions you can use. For now it only uses 4 directions.
             Vector2 north = new Vector2(node.Position.X, node.Position.Y - blockSize.Y);
             Vector2 south = new Vector2(node.Position.X, node.Position.Y + blockSize.Y);
-            Vector2 east = new Vector2(node.Position.X + blockSize.X, node.Position.Y);
-            Vector2 west = new Vector2(node.Position.X - blockSize.X, node.Position.Y);
+            Vector2  east = new Vector2(node.Position.X + blockSize.X, node.Position.Y);
+            Vector2  west = new Vector2(node.Position.X - blockSize.X, node.Position.Y);
 
             // Each statement checks if there exists a node at that position and if it does it adds that node as an edge for the specific node
             if (Adjecent.ContainsKey(north)) {
