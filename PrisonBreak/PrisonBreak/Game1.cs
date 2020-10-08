@@ -21,6 +21,7 @@ namespace PrisonBreak {
             // TODO: Remove later
             #region Testing
             // Only for testing
+            _entities = new List<Entity.Entity>();
             _block = new Vector2(32, 32);
             int i = 0;
             _grid = new Vector2[25 * 25];
@@ -36,6 +37,10 @@ namespace PrisonBreak {
 
             _player = new Player(this, new Vector2(0, 0));
             _player.setNode(_graph);
+            _player.TextureMap = Content.Load<Texture2D>("PrisonerSpriteSheet");
+            _entities.Add(_player);
+
+            _spriteAnimator = new SpriteAnimator();
 
             #endregion
 
@@ -53,6 +58,9 @@ namespace PrisonBreak {
                 Exit();
 
             // TODO: Add your update logic here
+            foreach (Entity.Entity entity in _entities) {
+                entity.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -61,6 +69,13 @@ namespace PrisonBreak {
             GraphicsDevice.Clear(Color.DarkSlateGray);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            foreach (Entity.Entity entity in _entities) {
+                _spriteBatch.Draw(entity.TextureMap, entity.Position, _spriteAnimator.textureChooser(entity.TextureMap, entity.Direction, _block), Color.White);
+            }
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -71,5 +86,6 @@ namespace PrisonBreak {
 
         private List<Entity.Entity> _entities;
         private Player _player;
+        private SpriteAnimator _spriteAnimator;
     }
 }

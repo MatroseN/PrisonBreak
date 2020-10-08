@@ -18,6 +18,9 @@ namespace PrisonBreak {
                 case Direction.EAST:
                     rect = new Rectangle((int)textureSize.X, (int)textureSize.Y, (int)textureSize.X, (int)textureSize.Y);
                     break;
+                case Direction.WEST:
+                    rect = new Rectangle((int)0, (int)textureSize.Y, (int)textureSize.X, (int)textureSize.Y);
+                    break;
             }
             return rect;
         }

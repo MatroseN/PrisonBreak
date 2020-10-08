@@ -32,16 +32,16 @@ namespace PrisonBreak.Graphing {
 
             // Each statement checks if there exists a node at that position and if it does it adds that node as an edge for the specific node
             if (Adjecent.ContainsKey(north)) 
-                node.Neighbours.Add(Direction.NORTH, Adjecent[north]);
+                node.Edges.Add(Direction.NORTH, Adjecent[north]);
 
             if (Adjecent.ContainsKey(south)) 
-                node.Neighbours.Add(Direction.SOUTH, Adjecent[south]);
+                node.Edges.Add(Direction.SOUTH, Adjecent[south]);
 
             if (Adjecent.ContainsKey(east)) 
-                node.Neighbours.Add(Direction.EAST, Adjecent[east]);
+                node.Edges.Add(Direction.EAST, Adjecent[east]);
 
             if (Adjecent.ContainsKey(west)) 
-                node.Neighbours.Add(Direction.WEST, Adjecent[west]);
+                node.Edges.Add(Direction.WEST, Adjecent[west]);
         }
 
         public Dictionary<Vector2, Node> Adjecent { get; set; }

@@ -5,9 +5,9 @@ namespace PrisonBreak.Graphing {
     public class Node {
         public Node(Vector2 pos) {
             Position = pos;
-            Neighbours = new Dictionary<Direction, Node>();
+            Edges = new Dictionary<Direction, Node>();
         }
         public Vector2 Position { get; set; }
-        public Dictionary<Direction, Node> Neighbours { get; set; }
+        public Dictionary<Direction, Node> Edges { get; set; }
     }
 }
