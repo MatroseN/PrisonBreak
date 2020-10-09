@@ -17,7 +17,6 @@ namespace PrisonBreak {
         }
 
         protected override void Initialize() {
-            // TODO: Add your initialization logic here
             // TODO: Remove later
             #region Testing
             // Only for testing
