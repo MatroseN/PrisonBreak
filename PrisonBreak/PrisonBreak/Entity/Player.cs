@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace PrisonBreak.Entity {
     public class Player : Entity, Character{
-        public Player(Game game, Vector2 position) : base(game, position) {
+        public Player(Game game, Vector2 position, Vector2 blockSize) : base(game, position, blockSize) {
             Direction = Direction.EAST;
         }
 

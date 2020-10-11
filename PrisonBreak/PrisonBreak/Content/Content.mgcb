@@ -37,7 +37,7 @@
 /processorParam:TextureFormat=Color
 /build:../Sprites/Characters/Prisoner/PrisonerSpriteSheet.png;PrisonerSpriteSheet.png
 
-#begin ../Sprites/Characters/Prisoner/PrisonerSpriteSheet.png
+#begin ../Sprites/Textures/Pixel.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -47,5 +47,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:../Sprites/Characters/Prisoner/PrisonerSpriteSheet.png;PrisonerSpriteSheet.png
+/build:../Sprites/Textures/Pixel.png;Pixel.png
 

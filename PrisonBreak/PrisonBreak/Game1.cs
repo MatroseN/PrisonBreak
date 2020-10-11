@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using PrisonBreak.Entity;
 using PrisonBreak.Graphing;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PrisonBreak {
     public class Game1 : Game {
@@ -38,12 +39,21 @@ namespace PrisonBreak {
             _graph = new Graph();
             _graph.gridToGraph(_grid, _block);
 
-            _player = new Player(this, new Vector2(0, 0));
+            _player = new Player(this, new Vector2(0, 0), _block);
             _player.setNode(_graph);
-            _player.TextureMap = Content.Load<Texture2D>("PrisonerSpriteSheet");
+
             _entities.Add(_player);
 
+            _enemy = new Enemy(this, new Vector2(10, 10), _block);
+            _enemy.setNode(_graph);
+            _entities.Add(_enemy);
+
             _spriteAnimator = new SpriteAnimator();
+            _lineOfSight = new LineOfSight();
+            _bresenhams = new Bresenhams();
+            _rays = new List<List<Vector2>>();
+
+            _rays = _lineOfSight.calculateLineOfSight(400, 400, Direction.NORTH, 10);
 
             #endregion
 
@@ -54,6 +64,9 @@ namespace PrisonBreak {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            _player.TextureMap = Content.Load<Texture2D>("PrisonerSpriteSheet");
+            _enemy.TextureMap = Content.Load<Texture2D>("GuardSpriteSheet");
+            _pixel = Content.Load<Texture2D>("Pixel");
         }
 
         protected override void Update(GameTime gameTime) {
@@ -78,6 +91,18 @@ namespace PrisonBreak {
                 _spriteBatch.Draw(entity.TextureMap, entity.Position, _spriteAnimator.textureChooser(entity.TextureMap, entity.Direction, _block), Color.White);
             }
 
+            for (int i = 0; i < _rays.Count; i++) {
+                for (int j = 0; j < _rays[i].Count; j++) {
+                    _spriteBatch.Draw(_pixel, _rays[i][j], Color.White);
+                }
+            }
+
+            for (int x = (int)_rays[0][_rays[0].Count -1].X; x < (int)_rays[_rays.Count-1][_rays[_rays.Count - 1].Count - 1].X; x++) {
+                int y = (int)_rays[0][_rays[0].Count - 1].Y;
+
+                _spriteBatch.Draw(_pixel, new Vector2(x, y), Color.White);
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -89,6 +114,12 @@ namespace PrisonBreak {
 
         private List<Entity.Entity> _entities;
         private Player _player;
+        private Enemy _enemy;
+
+        private Texture2D _pixel;
         private SpriteAnimator _spriteAnimator;
+        private LineOfSight _lineOfSight;
+        private Bresenhams _bresenhams;
+        private List<List<Vector2>> _rays;
     }
 }
