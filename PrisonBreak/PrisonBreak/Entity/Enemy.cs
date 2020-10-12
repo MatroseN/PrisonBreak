@@ -7,7 +7,7 @@ namespace PrisonBreak.Entity {
             // TODO: REmove when mapGeneration is popped in
             maxVelocity = 100.0f;
             maxAcceleration = 50.0f;
-            Direction = Direction.NORTH;
+            Direction = Direction.EAST;
             Acceleration = new Vector2(0, 0);
             Velocity = new Vector2(0, 0);
         }
@@ -45,18 +45,24 @@ namespace PrisonBreak.Entity {
                     }
                     break;
                 case Direction.WEST:
-                    if (Node.Edges.ContainsKey(Direction.WEST) && Position == Node.Position) {
-                        Node = Node.Edges[Direction.WEST];
-                        Acceleration = new Vector2(Acceleration.X - acceleration, Acceleration.Y);
-                    } else if (Position == Node.Position && !Node.Edges.ContainsKey(Direction.NORTH)) {
+                    if (Node.Edges.ContainsKey(Direction.WEST)) {
+                        if (Position.X > Node.Edges[Direction.WEST].Position.X) {
+                            Acceleration = new Vector2(Acceleration.X - acceleration, Acceleration.Y);
+                        } else {
+                            Node = Node.Edges[Direction.WEST];
+                        }
+                    } else {
                         turn();
                     }
                     break;
                 case Direction.EAST:
-                    if (Node.Edges.ContainsKey(Direction.EAST) && Position == Node.Position) {
-                        Node = Node.Edges[Direction.EAST];
-                        Acceleration = new Vector2(Acceleration.X + acceleration, Acceleration.Y);
-                    } else if (Position == Node.Position && !Node.Edges.ContainsKey(Direction.NORTH)) {
+                    if (Node.Edges.ContainsKey(Direction.EAST)) {
+                        if (Position.X < Node.Edges[Direction.EAST].Position.X) {
+                            Acceleration = new Vector2(Acceleration.X + acceleration, Acceleration.Y);
+                        } else {
+                            Node = Node.Edges[Direction.EAST];
+                        }
+                    } else {
                         turn();
                     }
                     break;

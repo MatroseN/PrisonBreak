@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using PrisonBreak.Entity;
 using PrisonBreak.Graphing;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PrisonBreak {
     public class Game1 : Game {
@@ -78,8 +77,6 @@ namespace PrisonBreak {
             _rays = new List<List<Vector2>>();
             _triangles = new List<VertexPositionColor[]>();
 
-            _rays = _lineOfSight.calculateLineOfSight(400, 400, Direction.NORTH, 10);
-
             #endregion
 
             base.Initialize();
@@ -102,6 +99,8 @@ namespace PrisonBreak {
             foreach (Entity.Entity entity in _entities) {
                 entity.Update(gameTime);
             }
+
+            _rays = _lineOfSight.calculateLineOfSight((int)_enemy.Position.X, (int)_enemy.Position.Y, _enemy.Direction, 10, _block);
 
             _triangles = new List<VertexPositionColor[]>();
             _vertexPositions = new List<List<Vector2>>();
@@ -132,8 +131,6 @@ namespace PrisonBreak {
                 _triangles.Add(vertecies);
             }
 
-            Debug.WriteLine(_triangles);
-
             base.Update(gameTime);
         }
 
@@ -147,11 +144,7 @@ namespace PrisonBreak {
                 _spriteBatch.Draw(entity.TextureMap, entity.Position, _spriteAnimator.textureChooser(entity.TextureMap, entity.Direction, _block), Color.White);
             }
 
-            for (int i = 0; i < _rays.Count; i++) {
-                for (int j = 0; j < _rays[i].Count; j++) {
-                    _spriteBatch.Draw(_pixel, _rays[i][j], Color.White);
-                }
-            }
+            
 
             _spriteBatch.End();
 
