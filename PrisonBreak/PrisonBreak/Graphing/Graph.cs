@@ -19,7 +19,8 @@ namespace PrisonBreak.Graphing {
         }
 
         private void addNode(Vector2 pos) {
-            Adjecent.Add(pos, new Node(pos));
+            Adjecent.Add(pos, new Node(pos, nodeIDIterator));
+            nodeIDIterator++;
         }
 
         // Sets the individual nodes edges
@@ -46,5 +47,7 @@ namespace PrisonBreak.Graphing {
 
         public Dictionary<Vector2, Node> Adjecent { get; set; }
         public Vector2[] Grid { get; set; }
+
+        private int nodeIDIterator = 0;
     }
 }

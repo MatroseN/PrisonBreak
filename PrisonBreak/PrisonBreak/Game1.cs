@@ -3,14 +3,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PrisonBreak.Entity;
 using PrisonBreak.Graphing;
+using PrisonBreak.Searching;
 using System.Collections.Generic;
+using monogameVector2 = Microsoft.Xna.Framework.Vector2;
+using monogameVector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace PrisonBreak {
     public class Game1 : Game {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private BasicEffect _basicEffect;
-        private float _angle;
 
         public Game1() {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,51 +34,47 @@ namespace PrisonBreak {
             _basicEffect.VertexColorEnabled = true;
 
             _basicEffect.World = Matrix.Identity;
-            Vector3 cameraUp = Vector3.Transform(new Vector3(0, -1, 0), Matrix.CreateRotationZ(camera2DrotationZ));
+             monogameVector3 cameraUp = monogameVector3.Transform(new monogameVector3(0, -1, 0), Matrix.CreateRotationZ(camera2DrotationZ));
             _basicEffect.View = Matrix.CreateLookAt(camera2DScrollPosition, camera2DScrollLookAt, cameraUp);
             _basicEffect.Projection = Matrix.CreateScale(1, -1, 1) * Matrix.CreateOrthographicOffCenter(0, _graphics.GraphicsDevice.Viewport.Width, _graphics.GraphicsDevice.Viewport.Height, 0, 0, 1);
 
             _vertecies = new VertexPositionColor[3];
 
-            _vertecies[0].Position = new Vector3(400, 400, 0);
+            _vertecies[0].Position = new monogameVector3(400, 400, 0);
             _vertecies[0].Color = new Color(50, 50, 0, 0);
 
-            _vertecies[1].Position = new Vector3(300, 200, 0);
+            _vertecies[1].Position = new monogameVector3(300, 200, 0);
             _vertecies[1].Color = new Color(50, 50, 0, 0);
 
-            _vertecies[2].Position = new Vector3(500, 200, 0);
+            _vertecies[2].Position = new monogameVector3(500, 200, 0);
             _vertecies[2].Color = new Color(50, 50, 0, 0);
 
 
             _entities = new List<Entity.Entity>();
-            _block = new Vector2(32, 32);
+            _block = new monogameVector2(32, 32);
             int i = 0;
-            _grid = new Vector2[25 * 25];
+            _grid = new monogameVector2[25 * 25];
             for (int y = 0; y < 25 * (int)_block.Y; y+=(int)_block.Y) {
                 for (int x = 0; x < 25 * (int)_block.X; x+=(int)_block.X) {
-                    _grid[i] = new Vector2(x, y);
+                    _grid[i] = new monogameVector2(x, y);
                     i++;
                 }
             }
 
             _graph = new Graph();
             _graph.gridToGraph(_grid, _block);
+            _bfs = new BFS(_graph);
 
-            _player = new Player(this, new Vector2(0, 0), _block);
+            _player = new Player(this, new monogameVector2(0, 0), _block);
             _player.setNode(_graph);
 
             _entities.Add(_player);
 
-            _enemy = new Enemy(this, new Vector2(10, 10), _block);
+            _enemy = new Enemy(this, new monogameVector2(10, 10), _block);
             _enemy.setNode(_graph);
             _entities.Add(_enemy);
 
             _spriteAnimator = new SpriteAnimator();
-            _lineOfSight = new LineOfSight();
-            _bresenhams = new Bresenhams();
-            _rays = new List<List<Vector2>>();
-            _triangles = new List<VertexPositionColor[]>();
-
             #endregion
 
             base.Initialize();
@@ -96,39 +94,21 @@ namespace PrisonBreak {
                 Exit();
 
             // TODO: Add your update logic here
+
+            if (!_enemy.isGuided && _enemy.checkIfPlayerInVision(_player.HitBox)) {
+                _enemy.isGuided = true;
+            }
+
+            if (_enemy.isGuided && _enemy.Position != _player.Position) {
+
+                _allPaths = _bfs.allPaths(_graph.Adjecent[_player.Position]);
+                _enemy.guidedMovement(_graph, _allPaths, _player.Node);
+            } else if(_enemy.Position == _player.Position) {
+                Initialize();
+            }
+
             foreach (Entity.Entity entity in _entities) {
                 entity.Update(gameTime);
-            }
-
-            _rays = _lineOfSight.calculateLineOfSight((int)_enemy.Position.X, (int)_enemy.Position.Y, _enemy.Direction, 10, _block);
-
-            _triangles = new List<VertexPositionColor[]>();
-            _vertexPositions = new List<List<Vector2>>();
-            foreach (List<Vector2> ray in _rays) {
-                Vector2 anchor = ray[0];
-                Vector2 final = ray[ray.Count - 1];
-                List<Vector2> points = new List<Vector2>();
-                points.Add(anchor);
-                points.Add(final);
-
-                _vertexPositions.Add(points);
-            }
-
-            for (int i = _vertexPositions.Count -1; i > 0; i--) {
-
-                VertexPositionColor[] vertecies = new VertexPositionColor[3];
-                vertecies[0].Color = new Color(50, 50, 0, 0);
-                vertecies[1].Color = new Color(50, 50, 0, 0);
-                vertecies[2].Color = new Color(50, 50, 0, 0);
-
-                // Current
-                vertecies[0].Position = new Vector3(_vertexPositions[i][0].X, _vertexPositions[i][0].Y, 0);
-                vertecies[1].Position = new Vector3(_vertexPositions[i][1].X, _vertexPositions[i][1].Y, 0);
-
-                // Next
-                vertecies[2].Position = new Vector3(_vertexPositions[i -1][1].X, _vertexPositions[i -1][1].Y, 0);
-
-                _triangles.Add(vertecies);
             }
 
             base.Update(gameTime);
@@ -144,8 +124,6 @@ namespace PrisonBreak {
                 _spriteBatch.Draw(entity.TextureMap, entity.Position, _spriteAnimator.textureChooser(entity.TextureMap, entity.Direction, _block), Color.White);
             }
 
-            
-
             _spriteBatch.End();
 
             RasterizerState rs = new RasterizerState();
@@ -154,11 +132,12 @@ namespace PrisonBreak {
 
             _basicEffect.CurrentTechnique.Passes[0].Apply();
 
-            foreach (VertexPositionColor[] triangle in _triangles) {
-                _graphics.GraphicsDevice.DrawUserPrimitives(
-                PrimitiveType.TriangleList, triangle, 0, 1);
+            if (!_enemy.isGuided) {
+                foreach (VertexPositionColor[] triangle in _enemy.Triangles) {
+                    _graphics.GraphicsDevice.DrawUserPrimitives(
+                    PrimitiveType.TriangleList, triangle, 0, 1);
+                }
             }
-
 
             base.Draw(gameTime);
         }
@@ -179,8 +158,8 @@ namespace PrisonBreak {
             GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
         }
 
-        private Vector2[] _grid;
-        private Vector2   _block;
+        private monogameVector2[] _grid;
+        private monogameVector2   _block;
         private Graph     _graph;
 
         private List<Entity.Entity> _entities;
@@ -189,15 +168,13 @@ namespace PrisonBreak {
 
         private Texture2D _pixel;
         private SpriteAnimator _spriteAnimator;
-        private LineOfSight _lineOfSight;
-        private Bresenhams _bresenhams;
-        private List<List<Vector2>> _rays;
         private VertexPositionColor[] _vertecies;
-        private List<List<Vector2>> _vertexPositions;
-        private List<VertexPositionColor[]> _triangles;
 
-        private Vector3 camera2DScrollPosition = new Vector3(0, 0, -1);
-        private Vector3 camera2DScrollLookAt = new Vector3(0, 0, 0);
+        private monogameVector3 camera2DScrollPosition = new monogameVector3(0, 0, -1);
+        private monogameVector3 camera2DScrollLookAt = new monogameVector3(0, 0, 0);
         private float camera2DrotationZ = 0f;
+
+        private BFS _bfs;
+        private Dictionary<Node, Node> _allPaths;
     }
 }

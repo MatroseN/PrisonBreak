@@ -14,6 +14,7 @@ namespace PrisonBreak {
             List<List<Vector2>> rays = new List<List<Vector2>>();
             int x1;
             int y1;
+            int rayLength = 200;
             int distance = 0;
 
             switch (direction) {
@@ -21,7 +22,7 @@ namespace PrisonBreak {
                     x0 += (int)blockSize.X /2;
                     for (int i = 0; i < rayAmount; i++) {
                         x1 = x0 - 150;
-                        y1 = y0 - 250;
+                        y1 = y0 - rayLength;
                         rays.Add(bresenhams.plotLine(x0, y0, x1 + distance, y1));
                         distance += 35;
                     }
@@ -31,7 +32,7 @@ namespace PrisonBreak {
                     y0 += (int)blockSize.Y;
                     for (int i = 0; i < rayAmount; i++) {
                         x1 = x0 - 150;
-                        y1 = y0 + 250;
+                        y1 = y0 + rayLength;
                         rays.Add(bresenhams.plotLine(x0, y0, x1 + distance, y1));
                         distance += 35;
                     }
@@ -39,7 +40,7 @@ namespace PrisonBreak {
                 case Direction.WEST:
                     y0 += (int)blockSize.Y /2;
                     for (int i = 0; i < rayAmount; i++) {
-                        x1 = x0 - 250;
+                        x1 = x0 - rayLength;
                         y1 = y0 + 150;
                         rays.Add(bresenhams.plotLine(x0, y0, x1, y1 - distance));
                         distance += 35;
@@ -49,7 +50,7 @@ namespace PrisonBreak {
                     y0 += (int)blockSize.Y / 2;
                     x0 += (int)blockSize.X;
                     for (int i = 0; i < rayAmount; i++) {
-                        x1 = x0 + 250;
+                        x1 = x0 + rayLength;
                         y1 = y0 + 150;
                         rays.Add(bresenhams.plotLine(x0, y0, x1, y1 - distance));
                         distance += 35;

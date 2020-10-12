@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 namespace PrisonBreak.Entity {
     public class Player : Entity, Character{
         public Player(Game game, Vector2 position, Vector2 blockSize) : base(game, position, blockSize) {
+            isGuided = false;
             Direction = Direction.EAST;
         }
 
@@ -15,9 +16,17 @@ namespace PrisonBreak.Entity {
         }
 
         public override void Update(GameTime gameTime) {
+            updateHitbox();
             move();
-
             base.Update(gameTime);
+        }
+
+        private void updateHitbox() {
+            HitBox = new Vector2[4];
+            HitBox[0] = Position;
+            HitBox[1] = new Vector2(Position.X + blockSize.X, Position.Y);
+            HitBox[2] = new Vector2(Position.X, Position.Y + blockSize.Y);
+            HitBox[3] = new Vector2(Position.X + blockSize.X, Position.Y + blockSize.Y);
         }
 
         private void move() {
@@ -57,6 +66,8 @@ namespace PrisonBreak.Entity {
 
             previousKeyboardState = currentKeyboardState;
         }
+
+        public Vector2[] HitBox { get; set; }
 
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
